@@ -116,7 +116,7 @@ export class ChatComponent implements AfterViewInit {
   private handleIceCandidateEvent(event: RTCPeerConnectionIceEvent): void {
     console.log('[PeerConnection]: icecandidate', event);
     if (event.candidate) {
-      this.chatService.sendMessage({type: 'icecandidate', data: event.candidate});
+      this.chatService.sendMessage({type: 'ice-candidate', data: event.candidate});
     }
   }
 
@@ -211,7 +211,7 @@ export class ChatComponent implements AfterViewInit {
         case 'hangup':
           this.handleHangupMessage(message);
           break;
-        case 'icecandidate':
+        case 'ice-candidate':
           this.handleIceCandidateMessage(message.data);
           break;
         default:

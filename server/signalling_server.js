@@ -14,7 +14,8 @@ wss.broadcast = (ws, data) => {
 
 wss.on('connection', (ws) => {
   console.log('Client connected, total clients connected: ', wss.clients.size);
-  ws.on('message', (message) => {
+  ws.on('message', (data, isBinary) => {
+    const message = isBinary ? data : data.toString();
     wss.broadcast(ws, message);
   });
 
@@ -23,7 +24,7 @@ wss.on('connection', (ws) => {
   });
 
   ws.on('error', (err) => {
-    console.log('Error occurred: ', err);
+    console.error('Error occurred: ', err);
   });
 });
 
