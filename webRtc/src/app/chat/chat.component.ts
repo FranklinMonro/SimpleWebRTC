@@ -2,6 +2,8 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatGridListModule } from '@angular/material/grid-list';
+
+
 import { ChatService } from './chat.service';
 
 const mediaConstraints = {
@@ -35,6 +37,7 @@ export class ChatComponent implements AfterViewInit {
     console.log('[ChatComponent]: constructor');
   }
 
+  videoTrackIndex = 1;
   ngAfterViewInit(): void {
     this.requestMediaDevices();
     this.addIncomingMessageHandler();
@@ -64,6 +67,25 @@ export class ChatComponent implements AfterViewInit {
     });
 
     this.localVideo!.nativeElement.srcObject = this.localStream;
+  }
+
+  async changeWebcam(): Promise<void> {
+    this.localStream?.getVideoTracks().forEach((track) => {
+      track.stop();
+    });
+    this.videoTrackIndex = this.videoTrackIndex === 0 ? 1 : 0;
+    const videoTracks = await (await navigator.mediaDevices.enumerateDevices()).filter((device) => device.kind === 'videoinput');
+    navigator.mediaDevices.getUserMedia({video: {deviceId: videoTracks[this.videoTrackIndex]!.deviceId}}).then((stream) => {
+      this.localVideo!.nativeElement.srcObject = stream;
+      stream.getTracks().forEach((track) => {
+        this.peerConnection?.getSenders().forEach((sender) => {
+          if (sender.track?.kind === 'video') {
+            console.log('track', track);
+            sender.replaceTrack(track);
+          }
+        });
+      });
+    });
   }
 
   async call(): Promise<void> {
