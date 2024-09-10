@@ -80,7 +80,6 @@ export class ChatComponent implements AfterViewInit {
       stream.getTracks().forEach((track) => {
         this.peerConnection?.getSenders().forEach((sender) => {
           if (sender.track?.kind === 'video') {
-            console.log('track', track);
             sender.replaceTrack(track);
           }
         });
